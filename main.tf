@@ -57,7 +57,7 @@ module "brand" {
   name                = each.value.name
   auth_host           = each.value.auth_host
   app_url             = each.value.app_url
-  mobile_bundle_ids   = each.value.mobile_bundle_ids
+  mobile_apps         = each.value.mobile_apps
   extra_redirect_uris = each.value.extra_redirect_uris
   metadata            = each.value.metadata
 

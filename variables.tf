@@ -21,9 +21,15 @@ variable "brands" {
     name      = string
     auth_host = string
     app_url   = string
-    mobile_bundle_ids = optional(object({
-      ios     = optional(list(string), [])
-      android = optional(list(string), [])
+    mobile_apps = optional(object({
+      ios = optional(list(object({
+        bundle_id = string
+        team_id   = string
+      })), [])
+      android = optional(list(object({
+        package_name             = string
+        sha256_cert_fingerprints = list(string)
+      })), [])
     }), {})
     extra_redirect_uris = optional(list(string), [])
     metadata            = optional(map(string), {})

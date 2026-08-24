@@ -30,17 +30,28 @@ variable "app_url" {
   type        = string
 }
 
-variable "mobile_bundle_ids" {
+variable "mobile_apps" {
   description = <<-EOT
-    Bundle identifiers (iOS) and package names (Android) of the mobile apps for this
-    brand, keyed by platform. Each entry produces the callback the Frontegg mobile
-    SDKs derive from auth_host.
+    The mobile apps for this brand.
+
+    Each app produces two things: the callback the Frontegg SDKs derive from auth_host,
+    and a registration in the association files Frontegg serves on that host.
+
+    iOS needs the Apple team id alongside the bundle id, because the
+    apple-app-site-association file identifies an app as {teamId}.{bundleId}. Android
+    needs the signing-certificate fingerprints the app ships under.
 
     Leave empty for brands with no mobile app.
   EOT
   type = object({
-    ios     = optional(list(string), [])
-    android = optional(list(string), [])
+    ios = optional(list(object({
+      bundle_id = string
+      team_id   = string
+    })), [])
+    android = optional(list(object({
+      package_name             = string
+      sha256_cert_fingerprints = list(string)
+    })), [])
   })
   default = {}
 }

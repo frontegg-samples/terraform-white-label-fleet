@@ -16,9 +16,9 @@ brands = {
     auth_host = "auth.northwind.example.com"
     app_url   = "https://app.northwind.example.com"
 
-    mobile_bundle_ids = {
-      ios     = ["com.example.northwind"]
-      android = ["com.example.northwind"]
+    mobile_apps = {
+      ios     = [{ bundle_id = "com.example.northwind", team_id = "ABCDE12345" }]
+      android = [{ package_name = "com.example.northwind", sha256_cert_fingerprints = ["14:6D:..."] }]
     }
   }
 }
@@ -70,6 +70,20 @@ Aggregating in the root is also a single API call rather than one per brand.
 The DNS side is still yours: each `auth_host` needs a CNAME pointing at the environment,
 and Frontegg will report the domain as `Pending` until that record resolves.
 
+## Mobile app registration
+
+Frontegg serves the `apple-app-site-association` and `assetlinks.json` files that bind
+a mobile app to its auth host, and `frontegg_associated_domain` registers the apps that
+go into them. The brand module registers whatever `mobile_apps` lists, so a brand's apps
+are bound by the same map entry that creates the brand.
+
+Those registrations are environment-wide rather than per brand, so two brands must not
+declare the same app. In a white-label fleet each brand ships its own, so they stay
+distinct.
+
+iOS is registered by its `{teamId}.{bundleId}` identifier and Android by its package name
+plus signing-certificate fingerprints, so the two are configured separately.
+
 ## Mobile redirect URIs
 
 The Frontegg mobile SDKs do not read their OAuth callback from configuration. They
@@ -84,16 +98,11 @@ authorization fails with `Redirect uri wasn't found` — and it fails *after* th
 already authenticated, which makes it look like a broken login rather than a missing
 setting.
 
-The module derives those URIs from `auth_host` and `mobile_bundle_ids` so they cannot
-drift from what the SDK actually sends. List every bundle identifier and package name
-that ships for the brand.
+The module derives those URIs from `auth_host` and `mobile_apps` so they cannot drift
+from what the SDK actually sends. List every app that ships for the brand.
 
 ## What this example does not cover
 
-- **Association files.** The `apple-app-site-association` and `assetlinks.json` files
-  that bind a mobile app to its auth host are served by Frontegg, not managed here.
-  Confirm they are served on your custom domains before relying on Universal Links or
-  App Links for a brand.
 - **Passkeys.** WebAuthn `rp.id` is derived by the identity service, not set through
   this provider. If you intend to scope passkeys per brand, settle that *before* a
   brand's first passkey enrolment — changing `rp.id` afterwards orphans credentials

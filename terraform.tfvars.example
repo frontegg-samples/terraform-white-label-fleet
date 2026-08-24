@@ -7,9 +7,12 @@ brands = {
     auth_host = "auth.northwind.example.com"
     app_url   = "https://app.northwind.example.com"
 
-    mobile_bundle_ids = {
-      ios     = ["com.example.northwind"]
-      android = ["com.example.northwind"]
+    mobile_apps = {
+      ios = [{ bundle_id = "com.example.northwind", team_id = "ABCDE12345" }]
+      android = [{
+        package_name             = "com.example.northwind"
+        sha256_cert_fingerprints = ["14:6D:E9:83:C5:73:06:50:D8:EE:B9:95:2F:34:FC:64:16:A0:83:42:E6:1D:BE:A8:8A:04:96:B2:3F:CF:44:E5"]
+      }]
     }
   }
 
@@ -18,8 +21,8 @@ brands = {
     auth_host = "auth.lakeside.example.com"
     app_url   = "https://app.lakeside.example.com"
 
-    mobile_bundle_ids = {
-      ios = ["com.example.lakeside"]
+    mobile_apps = {
+      ios = [{ bundle_id = "com.example.lakeside", team_id = "ABCDE12345" }]
     }
 
     metadata = {
